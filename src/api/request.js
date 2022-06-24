@@ -2,7 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 const axiosInstance = axios.create({
-  baseURL: process.env.VUE_APP_BASE_URL,
+  baseURL: "https://1c9d-103-240-35-190.in.ngrok.io",
 });
 
 axiosInstance.interceptors.request.use(
