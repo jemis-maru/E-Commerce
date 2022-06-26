@@ -1,5 +1,53 @@
 <template>
   <main class="main">
+    <q-dialog v-model="confirmCancelOrder" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <span class="q-ml-sm">Are you sure to cancel order?</span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn
+            flat
+            label="No"
+            @click="cancelClicked('cancel')"
+            color="primary"
+            v-close-popup
+          />
+          <q-btn
+            flat
+            label="Cancel order"
+            @click="cancelOrderConfirmed"
+            color="primary"
+            v-close-popup
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <q-dialog v-model="confirmReturnOrder" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <span class="q-ml-sm">Are you sure to return order?</span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn
+            flat
+            label="No"
+            @click="cancelClicked('return')"
+            color="primary"
+            v-close-popup
+          />
+          <q-btn
+            flat
+            label="Return"
+            @click="returnOrderConfirmed"
+            color="primary"
+            v-close-popup
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
     <q-dialog v-model="showDialog">
       <q-card>
         <q-card-section>
@@ -66,14 +114,14 @@
                     <p>Order status: {{ item.orderStatus }}</p>
                     <p
                       v-if="item.orderStatus == 'Delivered'"
-                      @click="rateDialog(item.orderId)"
+                      @click="rateDialog(item.id)"
                       class="rate-link"
                     >
                       Rate your order
                     </p>
                     <div v-if="item.orderStatus == 'Delivered'">
                       <q-btn
-                        @click="orderReturn(item.orderId)"
+                        @click="orderReturn(item.id)"
                         color="red"
                         label="Return order"
                       />
@@ -118,7 +166,11 @@ export default {
       reviewDescription: "",
       showDialog: false,
       rateWidth: 0,
-      orderId: '',
+      orderId: "",
+      confirmCancelOrder: false,
+      confirmReturnOrder: false,
+      cancelData: {},
+      returnData: {},
     };
   },
 
@@ -136,97 +188,101 @@ export default {
       this.showDialog = !this.showDialog;
     },
     submitReview() {
-
       let feedbackData = {
         orderProductId: this.orderId,
         feedbackDesc: this.reviewDescription,
         rating: this.rateValue,
       };
 
-      
-
       addFeedback(feedbackData)
         .then((res) => {
-        
           this.$q.notify({
             type: "positive",
-            message: "Order cancelled Successfully",
+            message: "Feedback submitted Successfully",
           });
         })
         .catch((err) => {
-          
           this.$q.notify({
             type: "negative",
             message: "Something went wrong|Please Try Again",
           });
         });
     },
-    orderCanceled(orderId, productId) {
-      let cancelData = {
-        trackingStatus: "Cancel",
-        productId,
-        orderId,
-      };
-
-     
-
-      cancelOrder(cancelData)
+    cancelClicked(param){
+      if(param == 'cancel'){
+        this.cancelData = {};
+      }
+      else{
+        this.returnData = {};
+      }
+    },
+    cancelOrderConfirmed(){
+      cancelOrder(this.cancelData)
         .then((res) => {
-         
           this.items = [];
           this.fetchOrders();
           this.$q.notify({
             type: "positive",
             message: "Order cancelled Successfully",
           });
+          this.cancelData = {};
         })
         .catch((err) => {
-         
           this.$q.notify({
             type: "negative",
             message: "Something went wrong|Please Try Again",
           });
+          this.cancelData = {};
         });
     },
-    orderReturn(orderId) {
-      let returnData = {
-        id: orderId,
+    orderCanceled(orderId, productId) {
+      this.cancelData = {
+        trackingStatus: "Cancel",
+        productId,
+        orderId,
       };
 
-    
-
-      returnOrder(returnData)
+      this.confirmCancelOrder = true;
+    },
+    returnOrderConfirmed(){
+      returnOrder(this.returnData)
         .then((res) => {
-          
           this.items = [];
           this.fetchOrders();
           this.$q.notify({
             type: "positive",
             message: "Order returned Successfully",
           });
+          this.returnData = {};
         })
         .catch((err) => {
-        
           this.$q.notify({
             type: "negative",
             message: "Something went wrong|Please Try Again",
           });
+          this.returnData = {};
         });
+    },
+    orderReturn(orderId) {
+      this.returnData = {
+        id: orderId,
+      };
+
+      this.confirmReturnOrder = true;
     },
     fetchOrders() {
       return new Promise((resolve, reject) => {
         getOrders()
           .then((response) => {
-         
             return response.data.data;
           })
           .then((data) => {
-        
             data.forEach((order) => {
               this.items.push({
                 isReturn: order.is_returned,
                 productId: order.Products.id,
-                orderId: order.id,
+                id: order.id,
+                orderId: order.orderId,
                 name: order.Products.productName,
                 quantity: order.quantity,
                 price: order.price,
@@ -237,7 +293,6 @@ export default {
             resolve(data);
           })
           .catch((data, error) => {
-          
             reject(error);
           });
       });

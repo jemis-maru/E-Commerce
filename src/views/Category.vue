@@ -174,18 +174,16 @@
 import {
   getAllProductsByQuery,
   filterProducts,
+  products,
 } from "../api/product/product.js";
-import {
-  getAllProducts,
-  getFilterProducyOnScroll,
-} from "../api/product/product.js";
+
 export default {
   name: "Category",
   data: () => ({
     isBrandOpen: true,
     isColorOpen: true,
     selectedFilters: [],
-    page: 1,
+    page: 2,
     count: null,
     sortBy: "price",
     sortOrder: [],
@@ -262,6 +260,9 @@ export default {
         currency: "USD",
       }).format(price);
     },
+    apiProducts(page, count, sortBy, sortOrder, searchWord) {
+      products(page, count, sortBy, sortOrder, searchWord);
+    },
     getProductsByQuery(searchword) {
       getAllProductsByQuery(searchword)
         .then((res) => {
@@ -294,8 +295,8 @@ export default {
     },
     filterProduct(page, count, sortBy, sortOrder, searchWord) {
       filterProducts(page, count, sortBy, sortOrder, searchWord)
-        .then((res) => {
-          this.products = res.data.data.data;
+        .then((response) => {
+          this.products = response.data.data.data;
         })
         .catch((err) => {
           console.log(err);
@@ -304,6 +305,7 @@ export default {
     async routeUpdated() {
       window.scrollTo(0, 0);
       this.searchword = this.$route.query.q;
+
       if (!this.searchword) {
         await this.$store.dispatch("products/fetchProducts");
         this.products = this.$store.getters["products/products"];
@@ -314,33 +316,66 @@ export default {
     },
     async getNextProducts() {
       window.onscroll = () => {
-        let bottomOfWindow =
-          document.documentElement.scrollTop + window.innerHeight ===
-          document.documentElement.offsetHeight;
-        if (bottomOfWindow && this.$route.name == "Category") {
-          this.page++;
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
           if (!this.queryWord) {
-            getAllProducts(this.page)
-              .then((response) => {
-                return response.data.data.data;
-              })
-              .then((data) => {
-                this.products = this.products.concat(data);
-              })
-              .catch((data, error) => {
-                console.log("data", data);
-              });
-          } else {
-            getFilterProducyOnScroll(this.page, this.queryWord)
-                .then((res) => {
-                  return res.data.data.data;
+            console.log("on scroll all product api call");
+
+            if (this.selectedFilters.length > 0) {
+              if (this.searchWordArr) {
+                this.page++;
+                filterProducts(this.page, "", "", "", this.searchWordArr)
+                  .then((response) => {
+                    return response.data.data.data;
+                  })
+                  .then((data) => {
+                    this.products = this.products.concat(data);
+                    this.page++;
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+              }
+            } else {
+              filterProducts(this.page, "", "", "", "")
+                .then((response) => {
+                  return response.data.data.data;
                 })
                 .then((data) => {
                   this.products = this.products.concat(data);
+                  this.page++;
                 })
                 .catch((err) => {
                   console.log(err);
                 });
+            }
+          } else {
+            if (this.queryWord && this.selectedFilters.length === 0) {
+              filterProducts(this.page, "", "", "", this.queryWord)
+                .then((response) => {
+                  return response.data.data.data;
+                })
+                .then((data) => {
+                  this.products = this.products.concat(data);
+                  this.page++;
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
+            } else if (this.selectedFilters.length > 0) {
+              if (this.searchWordArr) {
+                filterProducts(this.page, "", "", "", this.searchWordArr)
+                  .then((response) => {
+                    return response.data.data.data;
+                  })
+                  .then((data) => {
+                    this.products = this.products.concat(data);
+                    this.page++;
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+              }
+            }
           }
         }
       };

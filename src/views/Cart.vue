@@ -1,5 +1,17 @@
 <template>
   <main class="main">
+    <q-dialog v-model="confirm" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <span class="q-ml-sm">Confirm your order</span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Cancel" @click="cancelClicked" color="primary" v-close-popup />
+          <q-btn flat label="Confirm" @click="confirmForOrder" color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
     <div class="container">
       <div v-if="!nextClicked" class="cart">
         <h1 class="cart__title">Cart</h1>
@@ -72,7 +84,7 @@
               <tbody>
                 <tr>
                   <th>subtotal</th>
-                  <td>{{ formattedPrice(subtotal) }}</td>
+                  <td>{{ formattedPrice(cartTotal) }}</td>
                 </tr>
                 <tr>
                   <th>tax</th>
@@ -130,6 +142,7 @@ export default {
       subtotal: 0,
       tax: 0,
       total: 0,
+      confirm: false,
     };
   },
 
@@ -237,9 +250,11 @@ export default {
       this.nextClicked = true;
       window.scrollTo(0, 0);
     },
-    submitOrder() {
-     
-      if(this.selectedAddress){
+    cancelClicked(){
+      this.confirm = false;
+    },
+    confirmForOrder(){
+      if(this.selectedAddress ){
         let orderConfirmData = {
           addressId: this.selectedAddress,
         };
@@ -251,6 +266,7 @@ export default {
             message: "Order submitted Successfully",
           });
           this.nextClicked = false;
+          this.$router.push('/pastOrder')
         })
         .catch((err) => {
          
@@ -260,6 +276,9 @@ export default {
           });
         });
       }
+    },
+    submitOrder() {
+      this.confirm = true;
     },
   },
 

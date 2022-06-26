@@ -270,9 +270,7 @@ export default {
 
   methods: {
     updatePhoto() {
-   
       this.imageUrl = URL.createObjectURL(this.image);
-      
     },
 
     onReset() {
@@ -324,11 +322,8 @@ export default {
         email: this.email,
       };
 
-  
-
       verifyUser(verificationData)
         .then((res) => {
-         
           this.$q.notify({
             type: "positive",
             message: "Email verified Successfully",
@@ -336,7 +331,6 @@ export default {
           this.$router.push("/login");
         })
         .catch((err) => {
-   
           this.$q.notify({
             type: "negative",
             message: "Something went wrong|Please Try Again",
@@ -349,11 +343,8 @@ export default {
         email: this.email,
       };
 
-     
-
       resendOtp(userData)
         .then((res) => {
-         
           this.$q.notify({
             type: "positive",
             message: "Resend otp successfully",
@@ -363,7 +354,6 @@ export default {
           this.otpTimer();
         })
         .catch((err) => {
-         
           this.$q.notify({
             type: "negative",
             message: "Something went wrong|Please Try Again",
@@ -402,54 +392,56 @@ export default {
       fileData.append("contactNo", this.cnumber);
       fileData.append("role", "USER");
 
-      addUser(fileData)
-        .then((res) => {
-          
-          this.$q.notify({
-            type: "positive",
-            message: "User Added Successfully",
-          });
-          this.displayForm = false;
-          window.scrollTo(0, 0);
-          this.otpTimer();
-        })
-        .catch((err) => {
-       
-          this.$q.notify({
-            type: "negative",
-            message: "User Not Added|Please Try Again",
-          });
-        });
-
-      if (this.flag === true) {
-       
-
-        const address = {
-          houseNo: this.housenumber,
-          landmark: this.landmark,
-          city: this.city,
-          state: this.state,
-          country: this.country,
-          pincode: this.pincode,
-        };
-
-        addAddress(address)
+      if (this.password === this.cpassword) {
+        addUser(fileData)
           .then((res) => {
-          
+            if (this.flag === true) {
+              const address = {
+                houseNo: this.housenumber,
+                landmark: this.landmark,
+                city: this.city,
+                state: this.state,
+                country: this.country,
+                pincode: this.pincode,
+                userId: res.data.data.userId
+              };
+
+              addAddress(address)
+                .then((res) => {
+                  this.$q.notify({
+                    type: "positive",
+                    message: "Address Added Successfully",
+                  });
+                })
+                .catch((err) => {
+                  console.log(err);
+                  this.$q.notify({
+                    type: "negative",
+                    message: "Address Not Added - Please Try Again",
+                  });
+                });
+            }
             this.$q.notify({
               type: "positive",
-              message: "Address Added Successfully",
+              message: "User Added Successfully",
             });
+            this.displayForm = false;
+            window.scrollTo(0, 0);
+            this.otpTimer();
           })
           .catch((err) => {
-            
+            console.log(err);
             this.$q.notify({
               type: "negative",
-              message: "Address Not Added - Please Try Again",
+              message: "User Not Added|Please Try Again",
             });
           });
+      } else {
+        this.$q.notify({
+          type: "negative",
+          message: "password and confirm password does't match",
+        });
       }
-
     },
   },
 };

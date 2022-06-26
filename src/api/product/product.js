@@ -30,7 +30,7 @@ export function getAllProductsByQuery(searchWord){
 
 export function getFilterProducyOnScroll(page, searchWord){
   return axios({
-      url: "/product/guest?status=true&page="+ page + "searchWord=" + searchWord,
+      url: "/product/guest?status=true&page="+ page + "&searchWord=" + searchWord,
       method: "get",
     })
 }

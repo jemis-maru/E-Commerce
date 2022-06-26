@@ -2,26 +2,34 @@
   <div class="q-pa-md">
     <div class="q-gutter-y-md">
       <q-card>
-        <q-tabs
-          v-model="tab"
-          dense
-          class="text-grey"
-          active-color="primary"
-          indicator-color="primary"
-          align="justify"
-          narrow-indicator
-        >
-          <q-tab name="verified" icon="verified" label="Verified Sellers" />
-          <q-tab
-            name="pending"
-            icon="pending_actions"
-            label="pending Seller Request"
-          />
-        </q-tabs>
+        <q-dialog v-model="confirm" persistent>
+          <q-card>
+            <q-card-section class="row items-center">
+              <span class="q-ml-sm">Are you sure to delete user?</span>
+            </q-card-section>
+
+            <q-card-actions align="right">
+              <q-btn
+                flat
+                label="Cancel"
+                @click="cancelDelete"
+                color="primary"
+                v-close-popup
+              />
+              <q-btn
+                flat
+                label="Delete"
+                @click="confirmDelete"
+                color="primary"
+                v-close-popup
+              />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
         <q-separator />
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="verified">
-            <div class="text-h6">Sellers</div>
+            <div class="titleSeller text-h6">Sellers</div>
             <q-table
               style="box-shadow: none"
               flat
@@ -57,59 +65,6 @@
               </template>
             </q-table>
           </q-tab-panel>
-
-          <q-tab-panel name="pending">
-            <div class="text-h6">Pending Requests</div>
-            <q-table
-              style="box-shadow: none"
-              flat
-              :rows="pendingSellers"
-              :columns="columns"
-            >
-              <template v-slot:body-cell-FirstName="props">
-                <q-td :props="props">
-                  <q-item style="max-width: 420px">
-                    <q-item-section avatar>
-                      <q-avatar>
-                        <img :src="props.row.avatar" />
-                      </q-avatar>
-                    </q-item-section>
-
-                    <q-item-section>
-                      <q-item-label>{{ props.row.firstName }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </q-td>
-              </template>
-              <template v-slot:body-cell-Action="props">
-                <q-td :props="props">
-                  <div class="q-btn-container">
-                    <q-btn
-                      icon="task_alt"
-                      size="sm"
-                      @click="approveSeller(props.row.id)"
-                      class="bg-green text-white text-weight-bold"
-                      label="Approve"
-                    />
-                  </div>
-                  <div class="q-btn-container">
-                    <q-btn
-                      icon="delete"
-                      size="sm"
-                      @click="rejectSeller(props.row.id)"
-                      label="Reject"
-                      class="bg-red text-white text-weight-bold"
-                    />
-                  </div>
-                </q-td>
-              </template>
-            </q-table>
-          </q-tab-panel>
-
-          <q-tab-panel name="movies">
-            <div class="text-h6">Movies</div>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          </q-tab-panel>
         </q-tab-panels>
       </q-card>
     </div>
@@ -118,6 +73,7 @@
 
 <script>
 import { getApprovedSellers, getPendingSellers } from "../../api/sellers.js";
+import { deleteUser } from "../../api/user/user.js";
 
 export default {
   name: "TableActions",
@@ -126,6 +82,8 @@ export default {
       tab: "verified",
       approvedSellers: [],
       pendingSellers: [],
+      confirm: false,
+      userId: '',
       columns: [
         {
           name: "FirstName",
@@ -166,22 +124,43 @@ export default {
     };
   },
   methods: {
-    
+    blockMethod(param) {
+      this.userId = param;
+      this.confirm = true;
+    },
+    confirmDelete(){
+      deleteUser(this.userId)
+        .then((response) => {
+          this.$q.notify({
+            type: "positive",
+            icon: "done",
+            message: "Seller deleted Successfully",
+          });
+          this.userId = '';
+        })
+        .catch((error) => {
+          this.$q.notify({
+            type: "nagative",
+            message: "Seller does not deleted",
+          });
+          this.userId = '';
+        });
+    },
+    cancelDelete(){
+      this.userId = '';
+    }
   },
   created() {
     new Promise((resolve, reject) => {
       getApprovedSellers()
         .then((response) => {
-          
           return response.data.data.data;
         })
         .then((data) => {
-        
           this.approvedSellers = data;
           resolve(data);
         })
         .catch((data, error) => {
-         
           reject(error);
         });
     });
@@ -189,16 +168,13 @@ export default {
     new Promise((resolve, reject) => {
       getPendingSellers()
         .then((response) => {
-         
           return response.data.data.data;
         })
         .then((data) => {
-         
           this.pendingSellers = data;
           resolve(data);
         })
         .catch((data, error) => {
-         
           reject(error);
         });
     });
@@ -209,5 +185,8 @@ export default {
 <style scoped>
 .q-btn-container {
   margin: 4px;
+}
+.titleSeller {
+  margin-bottom: 30px;
 }
 </style>

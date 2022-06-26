@@ -30,6 +30,13 @@ export function updateUser(data, id) {
     })
 }
 
+export function deleteUser(id) {
+  return axios({
+      url: "/users/"+id,
+      method: "delete"
+    })
+}
+
 export function verifyUser(data) {
   return axios({
       url: "/users/verifyotp",

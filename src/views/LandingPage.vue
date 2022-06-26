@@ -52,7 +52,7 @@
       </div>
       <div class="desktop-slider">
         <SwiperSlider>
-          <template #title> Mobile</template>
+          <template #title> For you</template>
           <router-link
             :to="'/category/' + item.id"
             class="swiper-slide"

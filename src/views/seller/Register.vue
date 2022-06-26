@@ -281,8 +281,6 @@ export default {
     },
 
     onSubmit() {
-         
-
       const fileData = new FormData();
 
       fileData.append("avatar", this.image);
@@ -294,24 +292,29 @@ export default {
       fileData.append("role", "SELLER");
       fileData.append("GSTNo", this.gstnumber);
 
-
-      addSeller(fileData)
-      .then((res) => {
-          this.$q.notify({
-            type: "positive",
-            message: "Seller Added Successfully",
+      if (this.password === this.cpassword) {
+        addSeller(fileData)
+          .then((res) => {
+            this.$q.notify({
+              type: "positive",
+              message: "Seller Added Successfully",
+            });
+            this.displayForm = false;
+            window.scrollTo(0, 0);
+            this.otpTimer();
+          })
+          .catch((err) => {
+            this.$q.notify({
+              type: "negative",
+              message: "Seller Not Added|Please Try Again",
+            });
           });
-          this.displayForm = false;
-          window.scrollTo(0, 0);
-          this.otpTimer();
-        })
-        .catch((err) => {
-         
-          this.$q.notify({
-            type: "negative",
-            message: "Seller Not Added|Please Try Again",
-          });
+      } else {
+        this.$q.notify({
+          type: "negative",
+          message: "password and confirm password does't match",
         });
+      }
     },
   },
 };

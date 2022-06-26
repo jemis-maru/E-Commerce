@@ -1,20 +1,14 @@
 <template>
   <div class="q-pa-md">
     <q-table title="Orders" :rows="rows" :columns="columns">
-     <template v-slot:header="props">
+      <template v-slot:header="props">
         <q-tr :props="props">
           <q-th auto-width />
-          <q-th
-            v-for="col in props.cols"
-            :key="col.name"
-            :props="props"
-          >
+          <q-th v-for="col in props.cols" :key="col.name" :props="props">
             {{ col.label }}
           </q-th>
         </q-tr>
-      </template> 
-      
-
+      </template>
 
       <template v-slot:body="props">
         <q-tr :props="props">
@@ -31,11 +25,16 @@
           <q-td v-for="col in props.cols" :key="col.name" :props="props">
             {{ col.value }}
           </q-td>
-           
+
           <q-td auto-width>
-                  <q-select style="width:150px" map-options emit-value square outlined label="Change Status" @update:model-value="changeStatus(props.row.productId,props.row.orderId,props.row.id)" v-model="status[props.row.id]" :options="options" />
+            <div>
+              <select @change="changeStatus(props.row.productId,props.row.orderId,props.row.id)" v-model="status[props.row.id]" class="mySelectionBox">
+                <option v-for="item in options" :value="item" :key="item">
+                  {{ item }}
+                </option>
+              </select>
+            </div>
           </q-td>
-                    
         </q-tr>
         <q-tr v-show="props.expand" :props="props">
           <q-td colspan="100%">
@@ -146,7 +145,6 @@ export default {
   created() {
     getAllOrders()
       .then((res) => {
-    
         this.rows = res.data.data;
       })
       .catch((err) => {
@@ -159,20 +157,25 @@ export default {
   data() {
     return {
       rows: [],
-      options: ['Confirmed', 'Shipped', 'OutForDelivery', 'Delivered', 'Cancel'],
+      options: [
+        "Confirmed",
+        "Shipped",
+        "OutForDelivery",
+        "Delivered",
+        "Cancel",
+      ],
       columns,
-      status:{}
+      status: {},
     };
   },
   methods: {
-    changeStatus(productId,orderId,id){
-     
+    changeStatus(productId, orderId, id) {
       const payload = {
-        trackingStatus:this.status[id],
-        productId:productId,
-        orderId:orderId
-      }
-     
+        trackingStatus: this.status[id],
+        productId: productId,
+        orderId: orderId,
+      };
+
       changeOrderStatus(payload)
       .then((res) =>{
         this.$q.notify({
@@ -181,7 +184,7 @@ export default {
         })
         getAllOrders()
         .then((res) => {
-          
+
           this.rows = res.data.data;
         })
         .catch((err) => {
@@ -197,8 +200,8 @@ export default {
           message:'Something Went Wrong!'
         })
       })
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -207,7 +210,11 @@ export default {
   display: flex;
   margin: 8px;
 }
-.q-table th{
+.q-table th {
   border: none;
+}
+.mySelectionBox {
+  display: block;
+  max-width: 150px;
 }
 </style>

@@ -146,42 +146,42 @@ export default {
     };
   },
   computed: {
-    feedbackLength(){
+    feedbackLength() {
       return this.feedbackData.length;
     },
   },
   methods: {
-    goToCart(){
-      this.$router.push('/cart');
+    goToCart() {
+      this.$router.push("/cart");
     },
     addItem(prodId) {
-     
-      let productId = prodId;
-      let userId = this.$store.getters["user/user"].id;
+      if (this.$store.getters["user/user"].id) {
+        let productId = prodId;
+        let userId = this.$store.getters["user/user"].id;
 
-      let reqData = {
-        userId,
-        productId,
-        quantity: 1,
-      };
+        let reqData = {
+          userId,
+          productId,
+          quantity: 1,
+        };
 
-      
-
-      addToCart(reqData)
-        .then((res) => {
-          
-          this.$q.notify({
-            type: "positive",
-            message: "Product Added Successfully",
+        addToCart(reqData)
+          .then((res) => {
+            this.$q.notify({
+              type: "positive",
+              message: "Product Added Successfully",
+            });
+          })
+          .catch((err) => {
+            this.$q.notify({
+              type: "negative",
+              message: "Something went wrong|Please Try Again",
+            });
           });
-        })
-        .catch((err) => {
-         
-          this.$q.notify({
-            type: "negative",
-            message: "Something went wrong|Please Try Again",
-          });
-        });
+      }
+      else{
+        this.$router.push('/login');
+      }
     },
     showModal(image) {
       this.isShowingModal = true;
@@ -212,11 +212,10 @@ export default {
         getFeedback(feedbackData)
           .then((res) => {
             resolve(res);
-            
+
             this.feedbackData = res.data.data;
           })
           .catch((err) => {
-            
             reject(err);
           });
       });
@@ -231,13 +230,13 @@ export default {
     this.product = prodObj;
 
     let products = [];
-    
-    await this.$store.dispatch('cart/fetchProducts');
 
-    products = this.$store.getters['cart/products'];
+    await this.$store.dispatch("cart/fetchProducts");
 
-    products.forEach(data => {
-      if(data.Product.id == this.productId){
+    products = this.$store.getters["cart/products"];
+
+    products.forEach((data) => {
+      if (data.Product.id == this.productId) {
         this.alreadyInCart = true;
       }
     });
