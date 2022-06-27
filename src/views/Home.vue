@@ -1,8 +1,10 @@
 <template>
   <div>
     <BaseHeader @show-sidebar="handleSidebar" />
+    <div class="marginClass">
       <landing-page v-if="isHomeRoute" />
       <router-view :key="$route.fullPath" />
+    </div>
     <BaseFooter :showSideBar="isShowSideBar" />
   </div>
 </template>
@@ -45,4 +47,7 @@ export default {
 </script>
 
 <style scoped>
+.marginClass{
+  margin-top: 10%;
+}
 </style>

@@ -245,11 +245,13 @@
           <div class="navbar__action">
             <div class="header__basket">
               <router-link to="/cart">
-                <span
-                  class="header__basket-icon"
-                ></span>
+                <q-btn dense icon="shopping_cart" class="q-ml-md">
+                  <div v-if="cartCount != 0">
+                    <q-badge color="red" floating>{{ cartCount }}</q-badge>
+                  </div>
+                </q-btn>
               </router-link>
-             </div>
+            </div>
             <div class="header__account">
               <span
                 class="header__account-icon"
@@ -261,37 +263,42 @@
               >
                 <div class="header__dropdown-content">
                   <router-link
-                  v-if="!isLoggedIn"
+                    v-if="!isLoggedIn"
                     :to="{ name: 'Login' }"
                     class="header__account-link"
                     >Login</router-link
                   >
-                  <router-link  v-if="!isLoggedIn"
+                  <router-link
+                    v-if="!isLoggedIn"
                     :to="{ name: 'Register' }"
                     class="header__account-link"
                     >Register</router-link
                   >
-                  <router-link v-if="isLoggedIn"
+                  <router-link
+                    v-if="isLoggedIn"
                     :to="{ name: 'Profile' }"
                     class="header__account-link"
                     >Profile</router-link
                   >
-                  <router-link v-if="isLoggedIn"
+                  <router-link
+                    v-if="isLoggedIn"
                     :to="{ name: 'PastOrders' }"
                     class="header__account-link"
                     >Past orders</router-link
                   >
                   <router-link
-                  v-if="isLoggedIn"
+                    v-if="isLoggedIn"
                     :to="{ name: 'Complaint' }"
                     class="header__account-link"
                     >Complaint</router-link
                   >
-                  <button v-if="isLoggedIn"
-                     @click="Logout"
+                  <button
+                    v-if="isLoggedIn"
+                    @click="Logout"
                     class="header__account-link"
-                    >Logout</button
                   >
+                    Logout
+                  </button>
                 </div>
               </div>
             </div>
@@ -308,7 +315,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from "vuex";
 
 export default {
   name: "BaseHeader",
@@ -317,6 +324,7 @@ export default {
     return {
       isAccountDropDown: false,
       showSideBar: false,
+      notZero: true,
       items: [
         {
           id: 1,
@@ -334,15 +342,19 @@ export default {
     };
   },
   computed: {
-      isLoggedIn(){
-        return this.$store.state.user.token
-      }
+    isLoggedIn() {
+      return this.$store.state.user.token;
     },
+    cartCount(){
+      this.$store.dispatch('cart/fetchProducts');
+      let count = this.$store.getters['cart/cartCount'];
+      return count;
+    },
+  },
   methods: {
-  
     Logout() {
-      this.$store.dispatch('user/logout')
-      this.$router.push({ name: 'Home' })
+      this.$store.dispatch("user/logout");
+      this.$router.push({ name: "Home" });
     },
     showDropDownAccount() {
       this.isBasketDropDown = false;

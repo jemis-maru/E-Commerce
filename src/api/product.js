@@ -22,7 +22,7 @@ export function getapproveProduct(){
 }
 export function updateproduct(data) {
   return axios({
-      url: "product/details",
+      url: "/product/details",
       method: "put",
       data
     })

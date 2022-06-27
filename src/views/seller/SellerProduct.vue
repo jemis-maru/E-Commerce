@@ -81,7 +81,7 @@
                 outlined
                 :options="subcatogaryList"
                 v-model="SubCat"
-                label="select Category"
+                label="select Sub-category"
               ></q-select>
             </q-card-section>
             <q-separator />
@@ -92,7 +92,7 @@
                 outlined
                 :options="brandList"
                 v-model="brandid"
-                label="select Category"
+                label="select brand"
               ></q-select>
             </q-card-section>
             <q-card-actions align="right">
@@ -259,11 +259,11 @@
             </q-card-section>
                <q-separator />
                <q-card-section>
-                <q-select emit-value map-options outlined :options="subcatogaryList" v-model="modalData2.SubCat" label="select Category" ></q-select>
+                <q-select emit-value map-options outlined :options="subcatogaryList" v-model="modalData2.SubCat" label="select Sub-Category" ></q-select>
                </q-card-section>
                <q-separator />
                <q-card-section>
-                <q-select emit-value map-options outlined :options="brandList" v-model="modalData2.brandid" label="select Category" ></q-select>
+                <q-select emit-value map-options outlined :options="brandList" v-model="modalData2.brandid" label="select Brand" ></q-select>
                </q-card-section>
             <q-card-actions align="right">
               <q-btn flat label="Cancel" color="Red" v-close-popup />

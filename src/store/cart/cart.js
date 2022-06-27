@@ -28,6 +28,9 @@ const actions = {
 const getters = {
     products(state){
         return state.products;
+    },
+    cartCount(state){
+        return state.products.length;
     }
 }
 
