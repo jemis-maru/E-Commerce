@@ -18,7 +18,7 @@
                         class="q-ma-sm"
                         outlined
                         label="Enter Category"
-                        style="width: 400px"
+                        style="width: 400px; width:100%;"
                         v-model="this.form.categoryName"
                       />
                       <q-input
@@ -27,7 +27,7 @@
                         outlined
                         label="Enter Desctription"
                         v-model="this.form.description"
-                        style="width: 400px"
+                        style="width: 400px; width:100%;"
                       />
                       <input type="file" class="custom-file-input" ref="file" >
                 
@@ -36,7 +36,7 @@
                 </form>
               
             </q-card-section>
-          <q-card-section>
+          <q-card-section style="overflow-x: scroll;">
             <table style="text-align:left">
               <tr style="color:black">
                 <th><b>Category Name</b></th>
@@ -89,7 +89,7 @@
                   map-options
                   v-model="this.subCategoty.categoryId"
                   :options="options"
-                  style="width: 400px"
+                  style="width: 400px; width:100%;"
                   label="Select Category"
                 />
                 <q-input
@@ -98,7 +98,7 @@
                   v-model="this.subCategoty.subCategoryName"
                   outlined
                   label="Enter Sub Category"
-                  style="width: 400px"
+                  style="width: 400px; width:100%;"
                 />
                 <q-input
                   dense
@@ -106,7 +106,7 @@
                   class="q-ma-sm"
                   outlined
                   label="Enter Description"
-                  style="width: 400px"
+                  style="width: 400px; width:100%;"
                 />
             
                 <q-btn
@@ -120,8 +120,8 @@
           </div>
           </q-card-section>
           
-          <q-card-section>
-            <table style="text-align:left">
+          <q-card-section style="overflow-x: scroll;">
+            <table style="text-align:left; width:100%; ">
               <tr style="color:black">
                 <th><b>Sub Category Name</b></th>
                 <th><b>Description</b></th>
@@ -137,7 +137,7 @@
                     size="sm"
                     flat
                     icon="edit"
-                    @click="openCategoryModal(category.id)"
+                    @click="openSubCategoryModal(category.id)"
                   />
                 </td>
                 <td>
@@ -155,35 +155,48 @@
         </q-card>
       </div>
     </div>
-    <q-dialog @hide="onCloseDialog" @show="onOpenDialog" v-model="showDialogSubCategory">
+    <q-dialog @hide="onCloseDialog" @show="onOpenDialogSubCategory" v-model="showDialogSubCategory">
      
             <q-card>
-              <div class="q-ma-sm">Add Category</div>
+              <div class="q-ma-sm">Update SubCategory</div>
               <q-card-section>
-                <div>
-                  <q-select
-                    dense
-                    class="q-ma-sm"
-                    outlined
-                    v-model="model"
-                    :options="options"
-                    style="width: 400px"
-                    label="Select Category"
-                  />
-                  <q-input
-                    dense
-                    class="q-ma-sm"
-                    outlined
-                    label="Enter Sub Category"
-                    style="width: 400px"
-                  />
-                
-                  <q-btn
-                    color="primary"
-                    class="q-ma-sm"
-                    label="Add SubCategory"
-                  />
-                </div>
+                <form @submit.prevent="updateSubcategory">
+                <q-select
+                  dense
+                  class="q-ma-sm"
+                  outlined
+                  emit-value
+                  map-options
+                  v-model="this.subCategoryModal.categoryId"
+                  :options="options"
+                  style="width: 400px; width:100%;"
+                  label="Select Category"
+                />
+                <q-input
+                  dense
+                  class="q-ma-sm"
+                  v-model="this.subCategoryModal.subCategoryName"
+                  outlined
+                  label="Enter Sub Category"
+                  style="width: 400px; width:100%;"
+                />
+                <q-input
+                  dense
+                  v-model="this.subCategoryModal.description"
+                  class="q-ma-sm"
+                  outlined
+                  label="Enter Description"
+                  style="width: 400px; width:100%;"
+                />
+            
+                <q-btn
+                  type="submit"
+                  color="primary"
+                  class="q-ma-sm"
+                  label="Update SubCategory"
+                />
+                            
+              </form>
               </q-card-section>
             </q-card>
     </q-dialog>
@@ -220,7 +233,7 @@
 </template>
 
 <script>
-import { postCategory, getAllCategoriesByQuery ,deleteSubcategory,deleteCategory, getAllCategories, getCategoryById , updateCategory, addSubCategory,getAllSubcategories ,postSubcategory } from '../../api/category.js';
+import { postCategory, getAllCategoriesByQuery ,deleteSubcategory,deleteCategory, getAllCategories, getCategoryById , updateCategory, addSubCategory,getAllSubcategories ,postSubcategory,updateSubcategory,getSubcategoryById } from '../../api/category.js';
 export default {
   name: "AdminCategory",
   created() {
@@ -242,11 +255,18 @@ export default {
         imagePath: ""
       },
       subCategoty: {
-        subCategoryName:"xyzMobile",
-        description:"Mobile sub category",
+        subCategoryName:"",
+        description:"",
         categoryId:""
       },
       rows:[],
+      subCategoryModal:{
+        id:"",
+       subCategoryName:"",
+       description:"",
+        categoryId:""
+          }
+      ,
       selectCategory: "",
       categoriesList: [],
       subCategoriesList: [],
@@ -325,18 +345,34 @@ export default {
     },
     openSubCategoryModal(id){
       this.showDialogSubCategory = true;
+      this.subCategoryModal.id = id
     },
     onCloseDialog() {
      
      this.category.categoryName = ""
+     this.subCategoryModal.id =""
+     this.subCategoryModal.categoryId=""
+     this.subCategoryModal.subCategoryName =""
+     this.subCategoryModal.description=""
      this.category.description = ""
     },
     onOpenDialog() {
       getCategoryById(this.category.id).then(res => {
-        
+        console.log("===>res",res)
         this.category.categoryName = res.data.data.editData.categoryName;
         this.category.description = res.data.data.editData.description;
       
+      })
+      .catch(err => {
+        console.log(err);
+      });
+    },
+    onOpenDialogSubCategory(){
+        getSubcategoryById(this.subCategoryModal.id).then(res => {
+        
+        this.subCategoryModal.subCategoryName = res.data.data.editData.subCategoryName;
+        this.subCategoryModal.description = res.data.data.editData.description;
+        this.subCategoryModal.categoryId = res.data.data.editData.categoryId;
       })
       .catch(err => {
         console.log(err);
@@ -366,6 +402,22 @@ export default {
           message: "Category Not Updated|Please Try Again"
         });
       });
+    },
+    updateSubcategory(){
+        updateSubcategory(this.subCategoryModal)
+        .then((res)=>{
+          this.$q.notify({
+            type:"positive",
+            message:"Sub category updated!"
+          })
+          this.showDialogCategory = false
+          this.allCategories()
+          this.getAllCategoriesByQuery()
+          this.allSubCategories()
+        })
+        .catch(err=>{
+          console.log(err)
+        })
     },
     getAllCategoriesByQuery(){
       getAllCategoriesByQuery().then(res => {

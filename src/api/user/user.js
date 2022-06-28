@@ -2,7 +2,7 @@ import axios from '../request.js';
 
 export function getAllUsers(){
     return axios({
-        url: "/users",
+        url: "/users?count=50",
         method: "get",
       })
 }

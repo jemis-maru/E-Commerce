@@ -245,7 +245,7 @@
           <div class="navbar__action">
             <div class="header__basket">
               <router-link to="/cart">
-                <q-btn dense icon="shopping_cart" class="q-ml-md">
+                <q-btn flat dense icon="shopping_cart" class="q-ml-md">
                   <div v-if="cartCount != 0">
                     <q-badge color="red" floating>{{ cartCount }}</q-badge>
                   </div>

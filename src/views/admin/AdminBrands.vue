@@ -13,7 +13,7 @@
             outlined
             v-model="brand.brandName"
             label="Brand Name"
-            style="width: 300px"
+            style="max-width: 300px;width:100%;"
           />
           <q-input
             dense
@@ -21,7 +21,7 @@
             outlined
             v-model="brand.description"
             label="Brand Description"
-            style="width: 300px"
+            style="max-width: 300px; width:100%;"
           />
        
           <q-btn
@@ -32,7 +32,7 @@
           />
         </form>
       </div>
-      <q-card-section>
+      <q-card-section style="overflow-x: scroll;">
         <q-list>
           <q-item>
             <q-item-section>
