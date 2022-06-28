@@ -2,7 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 const axiosInstance = axios.create({
-  baseURL: "process.env.VUE_APP_BASE_URL",
+  baseURL: "https://bkart-ecommerce0.herokuapp.com/",
 });
 
 axiosInstance.interceptors.request.use(
