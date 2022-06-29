@@ -166,12 +166,12 @@ export default {
         };
 
         addToCart(reqData)
-          .then((res) => {
+          .then(async(res) => {
             this.$q.notify({
               type: "positive",
               message: "Product Added Successfully",
             });
-            this.$router.push('/cart');
+            await this.$store.dispatch("cart/fetchProducts")
           })
           .catch((err) => {
             this.$q.notify({
