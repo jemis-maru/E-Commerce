@@ -346,7 +346,6 @@ export default {
       return this.$store.state.user.token;
     },
     cartCount(){
-      this.$store.dispatch('cart/fetchProducts');
       let count = this.$store.getters['cart/cartCount'];
       return count;
     },

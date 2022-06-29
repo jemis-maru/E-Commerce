@@ -171,6 +171,7 @@ export default {
               type: "positive",
               message: "Product Added Successfully",
             });
+            this.$router.push('/cart');
           })
           .catch((err) => {
             this.$q.notify({
