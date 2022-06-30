@@ -18,6 +18,14 @@ export default {
     },
   },
 
+  created(){
+    window.addEventListener('storage', (e) => {
+      if(e.key == "vuex"){
+        location.reload();
+      }
+    });
+  }
+
 };
 </script>
 

@@ -105,8 +105,8 @@ const columns = [
   {
     name: "orderValue",
     align: "center",
-    label: "OrderValue ₹",
-    format: (row) => `${row}₹`,
+    label: "OrderValue $",
+    format: (row) => `${row}$`,
     field: "price",
     sortable: true,
   },

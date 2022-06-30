@@ -7,6 +7,9 @@ const mutations = {
     SET_PRODUCTS(state, payload){
         state.products = payload
     },
+    RESET_PRODUCTS(state){
+        state.products = []
+    }
 }
 const actions = {
     fetchProducts(context){

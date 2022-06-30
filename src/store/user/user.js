@@ -1,6 +1,6 @@
-import Cookies from 'js-cookie';
+// import Cookies from 'js-cookie';
 import { login } from '../../api/auth';
-
+import store from '../index'
 const state = {
     user: {},
     token: '',
@@ -38,7 +38,7 @@ const actions = {
             login(credentials).then((response) => {
                 const data = response.data.data;
                
-                Cookies.set('token', data.verifyToken, { expires: 1 });
+                // Cookies.set('token', data.verifyToken, { expires: 1 });
                 commit("SET_TOKEN", data.verifyToken);
                 commit("SET_EMAIL", data.user.email)
                 commit("SET_USER", data.user);
@@ -56,8 +56,10 @@ const actions = {
     
     logout({commit}){
         return new Promise((resolve,reject) => {
-            Cookies.remove('token');
+            // Cookies.remove('token');
+            store.commit('cart/RESET_PRODUCTS')
             commit("RESET_STATE");
+            localStorage.clear()
             resolve();
 
         })

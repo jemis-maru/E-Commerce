@@ -6,8 +6,8 @@
       </div>
     </q-card-section>
     <q-card-section class="q-pa-none">
-      
-      <table>
+      <div v-if="complaintList">No Complaints Found !!</div>
+      <table v-else>
         <thead>
           <tr>
             <th>Complaint ID</th>

@@ -1,13 +1,14 @@
 import axios from "axios";
-import Cookies from "js-cookie";
-
+// import Cookies from "js-cookie";
+import store from "../store/index"
 const axiosInstance = axios.create({
-  baseURL: "https://bkart-ecommerce0.herokuapp.com/",
+  baseURL: process.env.VUE_APP_BASE_URL,
 });
 
 axiosInstance.interceptors.request.use(
   (request) => {
-    const token = Cookies.get("token");
+    // const token = Cookies.get("token");
+    const token = store.state.user.token
     if (token) {
       request.headers["Authorization"] = "Bearer " + token;
     }

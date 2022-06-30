@@ -7,11 +7,11 @@
           <q-toolbar-title>Admin Dashboard</q-toolbar-title>
           <q-btn-dropdown flat color="white" label="admin">
             <q-list>
-              <q-item clickable v-close-popup @click="onItemClick">
+              <!-- <q-item clickable v-close-popup @click="onItemClick">
                 <q-item-section>
-                  <q-item-label>Profile</q-item-label>
+                  <q-item-label>Profile</q-itesm-label>
                 </q-item-section>
-              </q-item>
+              </q-item> -->
               <q-item clickable v-close-popup @click="logout">
                 <q-item-section>
                   <q-item-label>logout</q-item-label>
@@ -123,8 +123,11 @@ export default {
   methods:{
     
     logout(){
-      this.$store.dispatch("user/logout");
-      this.$router.push({ name: "Home" });
+      this.$store.dispatch("user/logout")
+      .then(response =>{
+        this.$router.push({ name: "Home" });
+      })
+      
     }
   }
 };

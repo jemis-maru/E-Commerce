@@ -243,9 +243,25 @@
             </ul>
           </div>
           <div class="navbar__action">
+            <div>
+              <div class="header__nav__search">
+                <input
+                  type="text"
+                  v-model="searchTxt"
+                  class="header__serach-input"
+                  placeholder="search..."
+                />
+                <button
+                  @click="searchMethod"
+                  class="header__search-btn btn btn--brand btn--boxshadow"
+                ></button>
+              </div>
+            </div>
+          </div>
+          <div class="navbar__action">
             <div class="header__basket">
               <router-link to="/cart">
-                <q-btn flat dense icon="shopping_cart" class="q-ml-md">
+                <q-btn flat dense icon="shopping_cart" class="cartIcon q-ml-md">
                   <div v-if="cartCount != 0">
                     <q-badge color="red" floating>{{ cartCount }}</q-badge>
                   </div>
@@ -264,7 +280,7 @@
                 <div class="header__dropdown-content">
                   <router-link
                     v-if="!isLoggedIn"
-                    :to="{ name: 'Login' }"
+                    :to="{ name: 'Login' ,query: { redirect: $route.name == 'Login' ? '/' : $route.fullPath  } }"
                     class="header__account-link"
                     >Login</router-link
                   >
@@ -325,6 +341,7 @@ export default {
       isAccountDropDown: false,
       showSideBar: false,
       notZero: true,
+      searchText: '',
       items: [
         {
           id: 1,
@@ -351,6 +368,12 @@ export default {
     },
   },
   methods: {
+    searchMethod() {
+      console.log(this.searchTxt)
+      if(this.searchTxt){
+        this.$router.push({ path: "/products", query: { q: this.searchTxt } });
+      }
+    },
     Logout() {
       this.$store.dispatch("user/logout");
       this.$router.push({ name: "Home" });
@@ -393,4 +416,12 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+.cartIcon{
+  color: #46b1ef !important;
+}
+.header__nav__search{
+  width: 100%;
+    position: relative;
+}
+</style>

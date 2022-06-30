@@ -11,13 +11,11 @@
                   <div>
                     <p class="form__label">Photo :</p>
                   </div>
-                  <div class="user_photo">
-                    <q-img
-                      :src="imageUrl"
-                      spinner-color="black"
-                      style="height: 150px; width: 150px"
-                    />
-                  </div>
+                  <q-img
+                    :src="imageUrl"
+                    spinner-color="black"
+                    class="user-img"
+                  />
                 </div>
 
                 <div class="self-end col-xs-12 col-sm-6 col-md-4">
@@ -538,10 +536,10 @@ export default {
 </script>
 
 <style scoped>
-.user_photo {
-  text-align: center;
-  border: 1px solid black;
-  margin: 0 20%;
+.user-img{
+  height: 150px;
+  max-width: 150px;
+  border: 1px solid black
 }
 
 .form_field {

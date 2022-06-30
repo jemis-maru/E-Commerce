@@ -48,6 +48,24 @@ export default {
 
 <style scoped>
 .marginClass{
-  margin-top: 10%;
+  margin-top: 7%;
+}
+
+@media all and (max-width: 900px) {
+  .marginClass{
+    margin-top: 12%;
+  }
+}
+
+@media all and (max-width: 700px) {
+  .marginClass{
+    margin-top: 15%;
+  }
+}
+
+@media all and (max-width: 480px) {
+  .marginClass{
+    margin-top: 25%;
+  }
 }
 </style>

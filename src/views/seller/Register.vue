@@ -222,7 +222,7 @@ export default {
             type: "positive",
             message: "Email verified Successfully",
           });
-          this.$router.push("/login");
+          this.$router.push({ name :'Login',query: { redirect: this.$route.fullPath }});
         })
         .catch((err) => {
           

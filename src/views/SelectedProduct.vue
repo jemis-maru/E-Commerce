@@ -166,12 +166,14 @@ export default {
         };
 
         addToCart(reqData)
-          .then(async(res) => {
+          .then(async (res) => {
             this.$q.notify({
               type: "positive",
               message: "Product Added Successfully",
             });
-            await this.$store.dispatch("cart/fetchProducts")
+           
+            await this.$store.dispatch('cart/fetchProducts')
+            
           })
           .catch((err) => {
             this.$q.notify({
@@ -181,7 +183,7 @@ export default {
           });
       }
       else{
-        this.$router.push('/login');
+        this.$router.push({ name :'Login', query :{ redirect: this.$route.fullPath }});
       }
     },
     showModal(image) {

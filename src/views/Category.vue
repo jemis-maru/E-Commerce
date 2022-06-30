@@ -5,6 +5,20 @@
     </div>
     <main class="main">
       <div class="container">
+        <div>
+          <ul class="breadcrumb">
+            <li class="breadcrumb__item breadcrumb__item--hide">
+              <router-link to="/" class="breadcrumb__link"
+                ><span class="breadcrumb__span">home</span></router-link
+              >
+            </li>
+            <li class="breadcrumb__item">
+              <router-link to="/" class="breadcrumb__link"
+                ><span class="breadcrumb__span">products</span></router-link
+              >
+            </li>
+          </ul>
+        </div>
         <div class="page">
           <div class="page__sidebar">
             <div class="box" v-show="selectedFilters.length > 0">
@@ -71,56 +85,56 @@
               </div>
             </div>
 
-            <div class="box">
-              <div class="box__row">
-                <div
-                  class="box__header"
-                  :class="{ 'box--togglable': !isColorOpen }"
-                  @click="isColorOpen = !isColorOpen"
-                >
-                  SortOrder
-                </div>
-                <div class="box__filter" v-show="isColorOpen">
-                  <div class="box__content-container">
-                    <div class="box__content">
-                      <ul class="box__ul">
-                        <li class="box__li">
-                          <label
-                            class="ui-checkbox"
-                            data-fa="Ascending"
-                            data-serach="ASC"
-                          >
-                            <input
-                              type="checkbox"
-                              class="ui-checkbox__input"
-                              value="ASC"
-                              id="asc"
-                              v-model="sortOrder"
-                              :disabled="disable"
-                            />
-                            <span class="ui-checkbox__mark"></span>
-                            Ascending
-                          </label>
-                        </li>
-                        <li class="box__li">
-                          <label
-                            class="ui-checkbox"
-                            data-fa="Descending"
-                            data-serach="DESC"
-                          >
-                            <input
-                              type="checkbox"
-                              class="ui-checkbox__input"
-                              value="DESC"
-                              id="desc"
-                              v-model="sortOrder"
-                              :disabled="disable"
-                            />
-                            <span class="ui-checkbox__mark"></span>
-                            Descending
-                          </label>
-                        </li>
-                      </ul>
+            <div :style="{ display: display ? 'inline' : 'none' }">
+              <div class="box">
+                <div class="box__row">
+                  <div
+                    class="box__header"
+                    :class="{ 'box--togglable': !isColorOpen }"
+                    @click="isColorOpen = !isColorOpen"
+                  >
+                    SortOrder
+                  </div>
+                  <div class="box__filter" v-show="isColorOpen">
+                    <div class="box__content-container">
+                      <div class="box__content">
+                        <ul class="box__ul">
+                          <li class="box__li">
+                            <label
+                              class="ui-checkbox"
+                              data-fa="Ascending"
+                              data-serach="ASC"
+                            >
+                              <input
+                                type="checkbox"
+                                class="ui-checkbox__input"
+                                value="ASC"
+                                id="asc"
+                                v-model="sortOrder"
+                              />
+                              <span class="ui-checkbox__mark"></span>
+                              Ascending
+                            </label>
+                          </li>
+                          <li class="box__li">
+                            <label
+                              class="ui-checkbox"
+                              data-fa="Descending"
+                              data-serach="DESC"
+                            >
+                              <input
+                                type="checkbox"
+                                class="ui-checkbox__input"
+                                value="DESC"
+                                id="desc"
+                                v-model="sortOrder"
+                              />
+                              <span class="ui-checkbox__mark"></span>
+                              Descending
+                            </label>
+                          </li>
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -129,18 +143,6 @@
           </div>
 
           <div class="page__content">
-            <ul class="breadcrumb">
-              <li class="breadcrumb__item breadcrumb__item--hide">
-                <router-link to="/" class="breadcrumb__link"
-                  ><span class="breadcrumb__span">home</span></router-link
-                >
-              </li>
-              <li class="breadcrumb__item">
-                <router-link to="/" class="breadcrumb__link"
-                  ><span class="breadcrumb__span">products</span></router-link
-                >
-              </li>
-            </ul>
             <div class="products">
               <router-link
                 :to="'/category/' + item.id"
@@ -173,8 +175,7 @@
 <script>
 import {
   getAllProductsByQuery,
-  filterProducts,
-  products,
+  filterProducts
 } from "../api/product/product.js";
 
 export default {
@@ -192,7 +193,8 @@ export default {
     searchword: null,
     products: [],
     brands: [],
-    disable: null,
+    display: null,
+    tempArr: [],
   }),
   computed: {
     searchTxt() {
@@ -228,12 +230,13 @@ export default {
     },
     selectedFilters() {
       if (this.searchWordArr.length === 0) {
-        this.disable = true;
+        this.display = false;
       } else {
-        this.disable = false;
+        this.display = true;
       }
     },
     products() {
+      this.tempArr = this.products;
       this.products.forEach((element) => {
         this.brands.push(element.brand.brandName);
       });
@@ -245,6 +248,7 @@ export default {
       this.selectedFilters = [];
       this.searchWordArr = [];
       this.sortOrder = [];
+      this.tempArr = [];
       this.$router.push("/category");
     },
     removeFilter(filter) {
@@ -275,22 +279,58 @@ export default {
     },
     updatedFilters() {
       this.page = 1;
-      if (this.searchWordArr) {
-        this.filterProduct(
-          this.page,
-          this.count,
-          this.sortBy,
-          this.sortOrder,
-          this.searchWordArr
-        );
-      } else if (this.queryWord) {
-        this.filterProduct(
-          this.page,
-          this.count,
-          this.sortBy,
-          this.sortOrder,
-          this.queryWord
-        );
+
+      if (this.queryWord) {
+        if (this.searchWordArr.length === 0) {
+          this.sortOrder.forEach((element) => {
+            if (element === "ASC") {
+              this.products = this.tempArr.sort((a, b) =>
+                a.price > b.price ? 1 : -1
+              );
+            } else if (element === "DESC") {
+              this.products = this.tempArr.sort((a, b) =>
+                a.price > b.price ? -1 : 1
+              );
+            }
+          });
+        }
+        else if (this.searchWordArr.length > 0 || this.sortOrder.length > 0) {
+          if (this.searchWordArr) {
+            this.filterProduct(
+              this.page,
+              this.count,
+              this.sortBy,
+              this.sortOrder,
+              this.searchWordArr
+            );
+          } else if (this.queryWord) {
+            this.filterProduct(
+              this.page,
+              this.count,
+              this.sortBy,
+              this.sortOrder,
+              this.queryWord
+            );
+          }
+        }
+      } else {
+        if (this.searchWordArr) {
+          this.filterProduct(
+            this.page,
+            this.count,
+            this.sortBy,
+            this.sortOrder,
+            this.searchWordArr
+          );
+        } else if (this.queryWord) {
+          this.filterProduct(
+            this.page,
+            this.count,
+            this.sortBy,
+            this.sortOrder,
+            this.queryWord
+          );
+        }
       }
     },
     filterProduct(page, count, sortBy, sortOrder, searchWord) {
@@ -305,7 +345,7 @@ export default {
     async routeUpdated() {
       window.scrollTo(0, 0);
       this.searchword = this.$route.query.q;
-
+      console.log(this.searchword);
       if (!this.searchword) {
         await this.$store.dispatch("products/fetchProducts");
         this.products = this.$store.getters["products/products"];
@@ -313,6 +353,7 @@ export default {
         this.getProductsByQuery(this.searchword);
       }
       this.disable = true;
+      this.display = false;
     },
     async getNextProducts() {
       window.onscroll = () => {
@@ -349,7 +390,11 @@ export default {
                 });
             }
           } else {
-            if (this.queryWord && this.selectedFilters.length === 0) {
+            if (
+              this.queryWord &&
+              this.selectedFilters.length === 0 &&
+              this.sortOrder.length === 0
+            ) {
               filterProducts(this.page, "", "", "", this.queryWord)
                 .then((response) => {
                   return response.data.data.data;
@@ -361,7 +406,11 @@ export default {
                 .catch((err) => {
                   console.log(err);
                 });
-            } else if (this.selectedFilters.length > 0) {
+            } else if (
+              this.queryWord &&
+              this.selectedFilters.length > 0 &&
+              this.sortOrder.length === 0
+            ) {
               if (this.searchWordArr) {
                 filterProducts(this.page, "", "", "", this.searchWordArr)
                   .then((response) => {
@@ -375,6 +424,23 @@ export default {
                     console.log(err);
                   });
               }
+            } else if (
+              this.queryWord &&
+              this.selectedFilters.length === 0 &&
+              this.sortOrder.length > 0
+            ) {
+              this.tempArr = [];
+              filterProducts(this.page, "", "", this.sortOrder, this.queryWord)
+                .then((response) => {
+                  return response.data.data.data;
+                })
+                .then((data) => {
+                  this.products = this.products.concat(data);
+                  this.page++;
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
             }
           }
         }
@@ -390,4 +456,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+#sortorder {
+  display: hide;
+}
+</style>

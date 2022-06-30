@@ -49,7 +49,7 @@ ul li {
     width: 100%;
     max-width: 90%;
     margin: 0 auto;
-    padding: 0 15px;
+    padding: 10px 15px;
 }
 
 .header__shape {
@@ -993,6 +993,7 @@ ul li {
     display: -webkit-box;
     display: flex;
     flex-wrap: wrap;
+    padding-right: 20px;
 }
 
 .products__item {

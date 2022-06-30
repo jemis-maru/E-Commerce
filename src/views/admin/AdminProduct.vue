@@ -206,7 +206,7 @@ const columns = [
     sortable: false,
     align: "center",
   },
-  { name: "commission", label: "Comission", field: "commission", format:(val , row) => Number(row) , align: "center" },
+  { name: "commission", label: "Comission (in %)", field: "commission", format:(val , row) => Number(row) , align: "center" },
   {
     name: "Action",
     label: "Action",
@@ -252,7 +252,7 @@ const approveColumn = [
     sortable: true,
     align: "left",
   },
-  { name: "commission", label: "Comission", field: "commission", align: "center" },
+  { name: "commission", label: "Comission (in %)", field: "commission", align: "center" },
   {
     name: "productDesc",
     label: "Description",

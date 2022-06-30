@@ -52,14 +52,17 @@ export default {
           this.$q.notify({
           type: 'positive',
           message: 'Login Successfully'})
-          this.$router.push({ name: 'Home' })
         })
         .then((res)=>{
+          if(this.$store.state.user.role == 'USER'){
+          this.$router.push({ name: 'Home' })
+            this.$router.push(this.$route.query.redirect || '/')
+          }
           if(this.$store.state.user.role == 'ADMIN'){
             this.$router.push({ name: 'AdminUsers' })
           }
           if(this.$store.state.user.role == 'SELLER'){
-             this.$router.push({ name: 'Product' })
+             this.$router.push({ name: 'SellerProduct' })
           }
         })
         .catch(err=>{
